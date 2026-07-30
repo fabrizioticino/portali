@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portali — Fatturazione elettronica, Conservazione a norma, Note SAP</title>
+<meta name="description" content="Raccolta dei tre portali: E-Invoicing Compliance Tracker, eArchiving (conservazione a norma) e Note e configurazioni SAP.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --paper:#F5F5F5;
+    --ink:#161616;
+    --ink-soft:#5A5A5A;
+    --line:#D6D6D6;
+    --accent:#C8102E;
+    --card:#FFFFFF;
+    --shadow: 0 1px 0 rgba(0,0,0,0.08);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(27,36,33,0.018) 0px, rgba(27,36,33,0.018) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  a{color:inherit;}
+
+  /* ───────── Header / masthead ───────── */
+  header.masthead{
+    position:relative;
+    z-index:1;
+    border-bottom:3px double var(--ink);
+    padding:28px 5vw 18px;
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:18px;
+  }
+  .masthead-top .dot{ color:var(--accent); }
+
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-size:clamp(34px, 6vw, 64px);
+    line-height:0.98;
+    margin:0 0 10px;
+    letter-spacing:-0.01em;
+  }
+  h1.title em{
+    font-style:italic;
+    font-weight:400;
+    color:var(--accent);
+  }
+
+  .subhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:18px;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+    margin-top:18px;
+  }
+  .subhead p{
+    max-width:640px;
+    font-size:15px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .meta-stamp{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-align:right;
+    color:var(--ink-soft);
+    line-height:1.6;
+    white-space:nowrap;
+  }
+  .meta-stamp .label{
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-size:10px;
+    color:var(--ink);
+  }
+
+  /* ───────── Cards ───────── */
+  main{
+    position:relative;
+    z-index:1;
+    padding:38px 5vw 60px;
+    flex:1;
+  }
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+    gap:22px;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    background:var(--card);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    text-decoration:none;
+    color:inherit;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    overflow:hidden;
+  }
+  .card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 14px 34px rgba(0,0,0,0.10);
+    border-color:var(--ink);
+  }
+  .card-top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding:18px 22px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .card-num{
+    font-family:'Fraunces', serif;
+    font-size:34px;
+    font-weight:600;
+    line-height:1;
+    color:var(--accent);
+  }
+  .card-body{ padding:14px 22px 22px; flex:1; display:flex; flex-direction:column; }
+  .card h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:24px;
+    line-height:1.12;
+    margin:6px 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .card .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0;
+  }
+  .card p.desc{
+    font-size:14.5px;
+    line-height:1.55;
+    color:var(--ink-soft);
+    margin:12px 0 16px;
+  }
+  .tags{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:3px 8px;
+  }
+  .card-foot{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+  .visit{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .arrow{
+    color:var(--accent);
+    font-size:20px;
+    transition:transform .18s ease;
+  }
+  .card:hover .arrow{ transform:translateX(5px); }
+  .card .url{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    word-break:break-all;
+    margin:0 0 2px;
+  }
+
+  /* accent top rule per card */
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0;
+    height:3px;
+    background:var(--accent);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .22s ease;
+  }
+  .card:hover::before{ transform:scaleX(1); }
+
+  /* ───────── Footer ───────── */
+  footer{
+    position:relative;
+    z-index:1;
+    border-top:3px double var(--ink);
+    padding:20px 5vw;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  footer .dot{ color:var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-top">
+    <span>Raccolta portali <span class="dot">●</span> Conformità digitale</span>
+    <span>Fabrizio Ticino</span>
+  </div>
+  <h1 class="title">Tre portali, <em>un solo indice</em></h1>
+  <div class="subhead">
+    <p>Punto d'accesso ai tre siti sulla conformità digitale: lo stato della fatturazione elettronica nel mondo, la conservazione a norma dei documenti informatici e le note di implementazione SAP paese per paese.</p>
+    <div class="meta-stamp">
+      <div class="label">Ultimo aggiornamento</div>
+      <div id="date">30 luglio 2026</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="cards">
+
+    <a class="card" href="https://fabrizioticino.github.io/einvoicing-tracker/">
+      <div class="card-top"><span>Compliance globale</span><span class="card-num">01</span></div>
+      <div class="card-body">
+        <p class="kicker">Fatturazione elettronica</p>
+        <h2>E-Invoicing Compliance Tracker</h2>
+        <p class="desc">Stato della fatturazione elettronica B2G, B2B, B2C, dell'e-reporting, di eCMR ed eFTI e dell'archiviazione in oltre 30 paesi. Schede paese aggiornate settimanalmente con date d'obbligo, piattaforme, formati e riferimenti normativi.</p>
+        <div class="tags">
+          <span class="tag">30+ paesi</span>
+          <span class="tag">B2G / B2B / B2C</span>
+          <span class="tag">eCMR · eFTI</span>
+          <span class="tag">ViDA</span>
+        </div>
+        <div class="card-foot">
+          <div>
+            <p class="url">fabrizioticino.github.io/einvoicing-tracker</p>
+            <span class="visit">Visita il portale</span>
+          </div>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="https://fabrizioticino.github.io/eArchiving/">
+      <div class="card-top"><span>Documenti informatici</span><span class="card-num">02</span></div>
+      <div class="card-body">
+        <p class="kicker">Conservazione a norma</p>
+        <h2>eArchiving</h2>
+        <p class="desc">Libro bianco sulla conservazione digitale a norma: manuali operativi, documenti contabili, documenti doganali (con focus CBAM), libri sociali, figure e responsabilità del Responsabile della Conservazione, con esempi e fonti normative.</p>
+        <div class="tags">
+          <span class="tag">CAD · AgID</span>
+          <span class="tag">Libri sociali</span>
+          <span class="tag">CBAM</span>
+          <span class="tag">Manuale RdC</span>
+        </div>
+        <div class="card-foot">
+          <div>
+            <p class="url">fabrizioticino.github.io/eArchiving</p>
+            <span class="visit">Visita il portale</span>
+          </div>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="https://fabrizioticino.github.io/sap-notes/">
+      <div class="card-top"><span>Implementazione</span><span class="card-num">03</span></div>
+      <div class="card-body">
+        <p class="kicker">Note e configurazioni SAP</p>
+        <h2>Note SAP e-invoicing</h2>
+        <p class="desc">Note SAP di implementazione e configurazione per l'e-invoicing B2B, paese per paese, per SAP Document and Reporting Compliance / eDocument on-premise (S/4HANA ed ECC): nota centrale e note collaterali, guide di customising e link ai documenti.</p>
+        <div class="tags">
+          <span class="tag">SAP DRC</span>
+          <span class="tag">eDocument</span>
+          <span class="tag">S/4HANA · ECC</span>
+          <span class="tag">Customising</span>
+        </div>
+        <div class="card-foot">
+          <div>
+            <p class="url">fabrizioticino.github.io/sap-notes</p>
+            <span class="visit">Visita il portale</span>
+          </div>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  <span>Portali sulla conformità digitale <span class="dot">●</span></span>
+  <span>Aggiornamento continuo</span>
+</footer>
+
+</body>
+</html>
