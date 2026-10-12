@@ -368,5 +368,20 @@
   <span class="disclaimer">Il materiale contenuto in questo portale è protetto da copyright ed è stato prodotto ad esclusivo uso interno e del cliente. Ne è pertanto espressamente vietata, senza previa autorizzazione scritta di Regesta, la distribuzione a terzi, totale o parziale e con ogni mezzo, per scopi che esulano dall'attività commerciale relativa al software. I dati personali eventualmente trattati nell'ambito della consultazione del portale sono gestiti nel rispetto del Regolamento (UE) 2016/679 (GDPR). Per informazioni sul trattamento dei dati personali, fare riferimento all'informativa privacy di Regesta Group.</span>
 </footer>
 
+<script>
+(async function(){
+  var repos = ['einvoicing-tracker','eArchiving','sap-notes'];
+  try {
+    var dates = await Promise.all(repos.map(function(r){
+      return fetch('https://api.github.com/repos/fabrizioticino/' + r + '/commits?per_page=1')
+        .then(function(res){ if(!res.ok) throw new Error(res.status); return res.json(); })
+        .then(function(c){ return new Date(c[0].commit.committer.date); });
+    }));
+    var last = new Date(Math.max.apply(null, dates));
+    document.getElementById('date').textContent =
+      last.toLocaleDateString('it-IT', {day:'numeric', month:'long', year:'numeric', timeZone:'Europe/Rome'});
+  } catch(e) {}
+})();
+</script>
 </body>
 </html>
